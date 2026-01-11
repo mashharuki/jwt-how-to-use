@@ -28,8 +28,8 @@ function App() {
   const storedJwt = localStorage.getItem('token');
   const [jwt, setJwt] = useState(storedJwt || null);
   const [foods, setFoods] = useState<Food[]>([]);
-  const [fetchError, setFetchError] = useState(null);
-  
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
   const getJwt = async () => {
     const { data } = await axios.get(`${apiUrl}/jwt`);
     localStorage.setItem('token', data.token);
@@ -42,10 +42,11 @@ function App() {
       setFoods(data);
       setFetchError(null);
     } catch (err) {
-      setFetchError(err.message);
+      const message = err instanceof Error ? err.message : 'An error occurred';
+      setFetchError(message);
     }
   };
-  
+
   return (
     <>
       <section style={{ marginBottom: '10px' }}>
@@ -61,8 +62,8 @@ function App() {
           Get Foods
         </button>
         <ul>
-          {foods.map((food, i) => (
-            <li>{food.description}</li>
+          {foods.map((food) => (
+            <li key={food.id}>{food.description}</li>
           ))}
         </ul>
         {fetchError && (

@@ -1,5 +1,5 @@
 const express = require('express');
-const jwt = require('express-jwt');
+const { expressjwt } = require('express-jwt');
 const jsonwebtoken = require('jsonwebtoken');
 const cors = require('cors');
 
@@ -15,7 +15,7 @@ app.get('/jwt', (req, res) => {
   });
 });
 
-app.use(jwt({ secret: jwtSecret, algorithms: ['HS256'] }));
+app.use(expressjwt({ secret: jwtSecret, algorithms: ['HS256'] }));
 
 const foods = [
   { id: 1, description: 'burritos' },

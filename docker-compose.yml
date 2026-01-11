@@ -1,5 +1,6 @@
 version: '3'
 services:
+  # フロントエンドのサービス定義
   front:
     build: docker
     tty: true

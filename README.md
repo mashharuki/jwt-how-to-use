@@ -1,46 +1,127 @@
-# Getting Started with Create React App
+# React Cookie内でJWTを取り扱うサンプルアプリ
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 概要
 
-## Available Scripts
+本プロジェクトは、ReactアプリケーションでJWT（JSON Web Token）を使用した認証の実装例を示すサンプルアプリケーションです。
 
-In the project directory, you can run:
+### 主な特徴
+- **フロントエンド**: React + TypeScript
+- **バックエンド**: Express.js（JWT発行・検証サーバー）
+- **認証方式**: JWT（HS256アルゴリズム）
+- **ストレージ**: LocalStorage（JWTトークンの保存）
+- **通信**: Axios（HTTPクライアント）
 
-### `yarn start`
+### 技術スタック
+- React 19.2.3
+- TypeScript 5.9.3
+- Express.js 4.21.2
+- jsonwebtoken 9.0.2
+- express-jwt 8.5.1
+- axios 1.7.9
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## システム構成図
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```mermaid
+graph TB
+    subgraph Browser["ブラウザ"]
+        subgraph ReactApp["React Application (Port 3000)"]
+            Button1["JWT取得ボタン"]
+            Button2["食品データ取得ボタン"]
+            Storage["LocalStorage<br/>(JWTトークン保存)"]
+            Interceptor["Axios Interceptor<br/>(認証ヘッダー自動付与)"]
+        end
+    end
+    
+    subgraph Server["Express Server (Port 3001)"]
+        subgraph AuthServer["認証サーバー"]
+            API1["GET /jwt<br/>JWTトークン発行"]
+            API2["GET /foods<br/>食品データ取得(JWT認証必須)"]
+            MW1["ミドルウェア:<br/>- CORS<br/>- express-jwt(JWT検証)"]
+        end
+    end
+    
+    ReactApp <-->|HTTP Request/Response| AuthServer
+```
 
-### `yarn test`
+## 機能一覧表
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| No | 機能名 | エンドポイント | メソッド | 認証 | 説明 |
+|----|--------|--------------|---------|------|------|
+| 1 | JWTトークン取得 | `/jwt` | GET | 不要 | ユーザー情報を基にJWTトークンを発行 |
+| 2 | 食品データ取得 | `/foods` | GET | 必要 | JWT認証後、食品リストを返却 |
 
-### `yarn build`
+### フロントエンド機能
+| 機能 | 説明 |
+|------|------|
+| JWT取得 | サーバーからJWTトークンを取得し、LocalStorageに保存 |
+| 食品データ取得 | JWTトークンを使用して保護されたAPIから食品データを取得 |
+| Axios Interceptor | 全てのAPIリクエストに自動的にJWTトークンをAuthorizationヘッダーに付与 |
+| エラーハンドリング | 認証エラーやネットワークエラーを表示 |
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 機能毎の処理シーケンス図
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 1. JWTトークン取得フロー
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```mermaid
+sequenceDiagram
+    actor User as ユーザー
+    participant React as React App
+    participant Server as Express Server
+    
+    User->>React: [Get JWT]クリック
+    React->>Server: GET /jwt
+    Note over Server: JWT生成<br/>(HS256, secret123)
+    Server-->>React: { token: "eyJ..." }
+    Note over React: LocalStorage.setItem<br/>('token', token)
+    React-->>User: JWT表示
+```
 
-### `yarn eject`
+### 2. 保護されたリソース取得フロー
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```mermaid
+sequenceDiagram
+    actor User as ユーザー
+    participant React as React App
+    participant Server as Express Server
+    
+    User->>React: [Get Foods]クリック
+    Note over React: LocalStorage.getItem<br/>('token')
+    Note over React: Axios Interceptor<br/>(Authorization header追加)
+    React->>Server: GET /foods<br/>Authorization: Bearer eyJ...
+    Note over Server: JWT検証<br/>(express-jwt)
+    
+    alt 成功時
+        Server-->>React: [{id:1, description:...}]
+        React-->>User: 食品リスト表示
+    else 失敗時
+        Server-->>React: 401 Unauthorized
+        React-->>User: エラーメッセージ
+    end
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 動かし方
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### インストール
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```bash
+yarn
+```
 
-## Learn More
+### ビルド
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+yarn build
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### フロントエンドの起動
+
+```bash
+yarn start
+```
+
+### JWT発行用のサーバー起動
+
+```bash
+yarn server
+```
+

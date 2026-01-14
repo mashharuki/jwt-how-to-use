@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
 import axios from 'axios';
-import './App.css';
+import { useState } from 'react';
+import './css/App.css';
 
 // API base URL
 const apiUrl = 'http://localhost:3001';

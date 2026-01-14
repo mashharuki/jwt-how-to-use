@@ -1,56 +1,17 @@
 {
-  "name": "app",
-  "version": "0.2.0",
+  "name": "jwt-how-to-use",
   "private": true,
-  "dependencies": {
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.1",
-    "@testing-library/user-event": "^14.5.2",
-    "@types/jest": "^29.5.14",
-    "@types/node": "^22.10.5",
-    "@types/react": "^19.2.8",
-    "@types/react-dom": "^19.2.3",
-    "ajv": "^8.17.1",
-    "axios": "^1.7.9",
-    "cors": "^2.8.5",
-    "express": "^4.21.2",
-    "express-jwt": "^8.5.1",
-    "jsonwebtoken": "^9.0.2",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "react-scripts": "5.0.1",
-    "typescript": "^5.9.3",
-    "web-vitals": "^4.2.4"
+  "workspaces": [
+    "pkgs/*"
+  ],
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "server": "node src/server.js"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "jest": {
-    "transformIgnorePatterns": [
-      "node_modules/(?!(axios)/)"
-    ]
+    "check": "npx biome check .",
+    "format": "npx biome format . --write",
+    "lint": "npx biome lint .",
+    "frontend": "yarn workspace frontend",
+    "backend": "yarn workspace backend"
   }
 }

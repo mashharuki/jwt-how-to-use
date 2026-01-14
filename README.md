@@ -19,6 +19,14 @@
 - express-jwt 8.5.1
 - axios 1.7.9
 
+## リポジトリ構成
+
+```
+pkgs/
+  frontend/   # React + TypeScript (CRA)
+  backend/    # Express + JWT (ts-node)
+```
+
 ## システム構成図
 
 ```mermaid
@@ -124,4 +132,3 @@ yarn start
 ```bash
 yarn server
 ```
-
